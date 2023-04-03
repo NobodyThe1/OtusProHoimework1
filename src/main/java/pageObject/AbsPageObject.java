@@ -1,8 +1,10 @@
 package pageObject;
 
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import waiters.Waiter;
 
 public abstract class AbsPageObject<T> {
@@ -17,5 +19,13 @@ public abstract class AbsPageObject<T> {
         this.waiter = new Waiter(driver);
 
         PageFactory.initElements(driver,  this);
+    }
+
+    protected String courseTitleLocator = "//*[contains (text(), '%s')]";
+
+    protected void moveAndClick (WebElement element) {
+        waiter.waitForCondition(ExpectedConditions.visibilityOf(element));
+        actions.moveToElement(element);
+        actions.click();
     }
 }

@@ -12,6 +12,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
+import pages.AnyPage;
 import pages.MainPage;
 
 @ExtendWith(UIExtension.class)
@@ -19,6 +20,16 @@ public class OtusMainPageTests {
 
 @Driver
 private WebDriver driver;
+
+    @Test
+    public void filterCourseByTitle() {
+        new MainPage(driver)
+                .open();
+        new CourseTile(driver)
+                .findCourseByTitle("Apache Kafka");
+        new AnyPage(driver)
+                .rightPageShouldBeOpened("Apache Kafka");
+    }
 
     @Test
     public void getCourseDate() {
