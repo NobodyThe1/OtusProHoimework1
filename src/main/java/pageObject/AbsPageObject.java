@@ -28,4 +28,12 @@ public abstract class AbsPageObject<T> {
         actions.moveToElement(element);
         actions.click();
     }
+
+    protected void moveAndPerform (WebElement element) {
+        waiter.waitForCondition(ExpectedConditions.visibilityOf(element));
+        actions.moveToElement(element);
+        actions.click()
+                .build()
+                .perform();
+    }
 }

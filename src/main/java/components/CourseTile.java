@@ -30,13 +30,17 @@ public class CourseTile extends AbsComponent<CourseTile> {
     @FindBy(css = ".lessons__new-item-start")
     private List<WebElement> courseStart;
 
+    public void moveToCourse(String title) {
+        moveAndPerform(driver.findElement(By.xpath(String.format(courseTitleLocator, title))));
+    }
     public void findCourseByTitle(String title) {
         moveAndClick(driver.findElement(By.xpath(String.format(courseTitleLocator, title))));
     }
 
-    public List<LocalDate> getEarlierCourse() {
-        List<LocalDateTime> allCoursesStarsDate = new ArrayList<>();
+    private List<LocalDate> allCoursesStartDate = new ArrayList<>();
+    private List<String> allCoursesStart = new ArrayList<>();
 
+    public List<String> getCoursesList() {
         List<String> courseSpecializationStartString = courseSpecializationStart.stream()
                 .map(WebElement::getText)
                 .filter(String -> String.length() > 10)
@@ -48,24 +52,29 @@ public class CourseTile extends AbsComponent<CourseTile> {
                 .map(String -> (String.replaceAll("[С]\\s", "")))
                 .collect(Collectors.toList());
 
-        List<String> allCoursesStartString = new ArrayList<>();
         Stream.of(courseSpecializationStartString, courseStartString)
-                .forEach(allCoursesStartString::addAll);
+                .forEach(allCoursesStart::addAll);
 
-        List<LocalDate> allCoursesStartDate = new ArrayList<>();
+        return allCoursesStart;
+    }
 
-        for (String dateOfStart : allCoursesStartString) {
+    public List<LocalDate> getCourseDate() {
+
+        for (String dateOfStart : allCoursesStart) {
             String monthOfStart = dateOfStart.split(" ")[1];
             dateOfStart = dateOfStart.replaceAll("[а-я]+", String.format("%d", MonthData.getDate(monthOfStart).getNumber()));
             dateOfStart += " " + LocalDate.now().getYear();
             if (dateOfStart.equals("О дате старта будет объявлено позже")) {
-                allCoursesStartDate.add(null);
+                return null;
             } else if (dateOfStart.equals("В сентябре")) {
-                allCoursesStartDate.add(LocalDate.of(2023, 9, 29));
+                allCoursesStartDate.add(LocalDate.of(2025, 9, 29));
             } else {
                 allCoursesStartDate.add(LocalDate.parse(dateOfStart, DateTimeFormatter.ofPattern("d M yyyy", Locale.ROOT)));
             }
         }
         return allCoursesStartDate;
+                //.stream()
+                //.reduce((item1, item2) -> !DateUtil.compareCourseDate(getCourseDate(item1), getCourseDate(item2)) ? item1 : item2)
+                //.orElse(null);
     }
 }

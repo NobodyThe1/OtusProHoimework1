@@ -1,17 +1,9 @@
 import annotations.Driver;
 import components.CourseTile;
 import extensions.UIExtension;
-import factories.WebDriverFactory;
-import io.github.bonigarcia.wdm.WebDriverManager;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.support.events.EventFiringWebDriver;
 import pages.AnyPage;
 import pages.MainPage;
 
@@ -20,6 +12,14 @@ public class OtusMainPageTests {
 
 @Driver
 private WebDriver driver;
+
+    @Test
+    public void moveToCourseTile() {
+        new MainPage(driver)
+                .open();
+        new CourseTile(driver)
+                .moveToCourse("Apache Kafka");
+    }
 
     @Test
     public void filterCourseByTitle() {
@@ -36,6 +36,6 @@ private WebDriver driver;
         new MainPage(driver)
                 .open();
         new CourseTile(driver)
-                .getEarlierCourse();
+                .getCourseDate();
     }
 }

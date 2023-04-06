@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
-@Path("")
 public class AnyPage extends AbsPage<AnyPage>{
 
     public AnyPage(WebDriver driver) {
