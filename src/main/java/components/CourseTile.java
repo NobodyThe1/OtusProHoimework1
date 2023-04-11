@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.Temporal;
 import java.util.*;
+import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import data.MonthData;
 import pages.AnyPage;
@@ -22,59 +23,48 @@ public class CourseTile extends AbsComponent<CourseTile> {
         super(driver);
     }
 
-    //String courseTitleLocator = "//*[contains (text(), '%s')]";
+    @FindBy (css = "[class='lessons'] .lessons__new-item-start, [class='lessons'] .lessons__new-item-bottom > .lessons__new-item-time")
+    private List<WebElement> courseList;
 
-    @FindBy(css = ".lessons__new-item-time")
-    private List<WebElement> courseSpecializationStart;
+    public AnyPage getEarlierLaterCourse(boolean isEarlier) {
 
-    @FindBy(css = ".lessons__new-item-start")
-    private List<WebElement> courseStart;
+        BinaryOperator<LocalDate> reduceImpl = null;
+        if (isEarlier) {
+            reduceImpl = (LocalDate x, LocalDate y) -> x.isBefore(y) ? y : x;
+        } else {
+            reduceImpl = (LocalDate x, LocalDate y) -> x.isBefore(y) ? y : y;
+        }
+
+        courseList.stream()
+                .filter((WebElement element) -> !element.getText().equals("О дате старта будет объявлено позже"))
+                .map((WebElement element) -> {
+                    String dateString = element.getText().replaceAll("^С", "");
+
+                    String month = dateString.split("\\s+")[1];
+                    dateString = dateString.replaceAll("[а-я]+",
+                            String.format("%d", MonthData.getDate(month).getNumber())) + " " + LocalDate.now().getYear();
+                    return LocalDate.parse(dateString, DateTimeFormatter.ofPattern("d M yyyy"));
+                })
+                .reduce(reduceImpl)
+                .map((LocalDate localDate) -> {
+                    String finalDate = localDate.toString();
+                    finalDate = finalDate.replaceAll("\\s\\d\\d\\d\\d", "");
+                    int month = Integer.parseInt(finalDate.split("\\s+")[1]);
+                    return finalDate.replaceAll("\\s\\d*", String.format("%s", MonthData.getMonthName(month)));
+                })
+                .map((String finalDate) -> {
+                    WebElement element = driver.findElement(By.xpath(String.format(courseTitleLocator, finalDate)));
+                    return element;
+                })
+                .get()
+                .click();
+        return new AnyPage(driver);
+    }
 
     public void moveToCourse(String title) {
         moveAndPerform(driver.findElement(By.xpath(String.format(courseTitleLocator, title))));
     }
     public void findCourseByTitle(String title) {
         moveAndClick(driver.findElement(By.xpath(String.format(courseTitleLocator, title))));
-    }
-
-    private List<LocalDate> allCoursesStartDate = new ArrayList<>();
-    private List<String> allCoursesStart = new ArrayList<>();
-
-    public List<String> getCoursesList() {
-        List<String> courseSpecializationStartString = courseSpecializationStart.stream()
-                .map(WebElement::getText)
-                .filter(String -> String.length() > 10)
-                .map(String -> (String.replaceAll("\\s\\d.*", "")))
-                .collect(Collectors.toList());
-
-        List<String> courseStartString = courseStart.stream()
-                .map(WebElement::getText)
-                .map(String -> (String.replaceAll("[С]\\s", "")))
-                .collect(Collectors.toList());
-
-        Stream.of(courseSpecializationStartString, courseStartString)
-                .forEach(allCoursesStart::addAll);
-
-        return allCoursesStart;
-    }
-
-    public List<LocalDate> getCourseDate() {
-
-        for (String dateOfStart : allCoursesStart) {
-            String monthOfStart = dateOfStart.split(" ")[1];
-            dateOfStart = dateOfStart.replaceAll("[а-я]+", String.format("%d", MonthData.getDate(monthOfStart).getNumber()));
-            dateOfStart += " " + LocalDate.now().getYear();
-            if (dateOfStart.equals("О дате старта будет объявлено позже")) {
-                return null;
-            } else if (dateOfStart.equals("В сентябре")) {
-                allCoursesStartDate.add(LocalDate.of(2025, 9, 29));
-            } else {
-                allCoursesStartDate.add(LocalDate.parse(dateOfStart, DateTimeFormatter.ofPattern("d M yyyy", Locale.ROOT)));
-            }
-        }
-        return allCoursesStartDate;
-                //.stream()
-                //.reduce((item1, item2) -> !DateUtil.compareCourseDate(getCourseDate(item1), getCourseDate(item2)) ? item1 : item2)
-                //.orElse(null);
     }
 }

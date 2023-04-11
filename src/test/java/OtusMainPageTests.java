@@ -36,6 +36,6 @@ private WebDriver driver;
         new MainPage(driver)
                 .open();
         new CourseTile(driver)
-                .getCourseDate();
+                .getEarlierLaterCourse(true);
     }
 }

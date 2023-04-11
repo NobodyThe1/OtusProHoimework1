@@ -36,4 +36,10 @@ public enum MonthData {
                 .filter((MonthData monthsData) -> monthsData.getName().equals(name))
                 .findFirst().get();
     }
+
+    public static MonthData getMonthName(int number) {
+        return Arrays.stream(MonthData.values())
+                .filter((MonthData monthsData) -> monthsData.getNumber() == number)
+                .findFirst().get();
+    }
 }
