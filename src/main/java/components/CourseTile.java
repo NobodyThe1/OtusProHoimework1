@@ -38,7 +38,8 @@ public class CourseTile extends AbsComponent<CourseTile> {
         courseList.stream()
                 .filter((WebElement element) -> !element.getText().equals("О дате старта будет объявлено позже"))
                 .map((WebElement element) -> {
-                    String dateString = element.getText().replaceAll("^С", "");
+                    String dateString = element.getText().replaceAll("^С", "").trim();
+                    dateString = dateString.replaceAll("t\\s\\d*\\s.*", "");
 
                     String month = dateString.split("\\s+")[1];
                     dateString = dateString.replaceAll("[а-я]+",
