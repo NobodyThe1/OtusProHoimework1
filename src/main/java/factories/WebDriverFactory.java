@@ -1,6 +1,6 @@
 package factories;
 
-import com.opera.core.systems.OperaDriver;
+import org.openqa.selenium.opera.OperaDriver;
 import data.BrowserData;
 import exceptions.BrowserNotSupportedException;
 import io.github.bonigarcia.wdm.WebDriverManager;

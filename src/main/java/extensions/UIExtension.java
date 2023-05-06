@@ -22,8 +22,6 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-import static com.fasterxml.jackson.databind.util.ClassUtil.getDeclaredFields;
-
 public class UIExtension implements BeforeEachCallback, AfterEachCallback {
 
     private EventFiringWebDriver driver = null;

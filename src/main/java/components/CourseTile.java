@@ -26,7 +26,7 @@ public class CourseTile extends AbsComponent<CourseTile> {
     @FindBy (css = "[class='lessons'] .lessons__new-item-start, [class='lessons'] .lessons__new-item-bottom > .lessons__new-item-time")
     private List<WebElement> courseList;
 
-    public AnyPage getEarlierLaterCourse(boolean isEarlier) {
+    public void getEarlierLaterCourse(boolean isEarlier) {
 
         BinaryOperator<LocalDate> reduceImpl = null;
         if (isEarlier) {
@@ -39,7 +39,7 @@ public class CourseTile extends AbsComponent<CourseTile> {
                 .filter((WebElement element) -> !element.getText().equals("О дате старта будет объявлено позже"))
                 .map((WebElement element) -> {
                     String dateString = element.getText().replaceAll("^С", "").trim();
-                    dateString = dateString.replaceAll("t\\s\\d*\\s.*", "");
+                    dateString = dateString.replaceAll("\\s+\\d+\\s.*", "");
 
                     String month = dateString.split("\\s+")[1];
                     dateString = dateString.replaceAll("[а-я]+",
@@ -48,10 +48,8 @@ public class CourseTile extends AbsComponent<CourseTile> {
                 })
                 .reduce(reduceImpl)
                 .map((LocalDate localDate) -> {
-                    String finalDate = localDate.toString();
-                    finalDate = finalDate.replaceAll("\\s\\d\\d\\d\\d", "");
-                    int month = Integer.parseInt(finalDate.split("\\s+")[1]);
-                    return finalDate.replaceAll("\\s\\d*", String.format("%s", MonthData.getMonthName(month)));
+                    String finalDate = localDate.format(DateTimeFormatter.ofPattern("d M"));
+                    return finalDate.replaceAll("\\s+\\d+$", String.format("%s", MonthData.getMonthName(localDate.getMonthValue())));
                 })
                 .map((String finalDate) -> {
                     WebElement element = driver.findElement(By.xpath(String.format(courseTitleLocator, finalDate)));
@@ -59,7 +57,6 @@ public class CourseTile extends AbsComponent<CourseTile> {
                 })
                 .get()
                 .click();
-        return new AnyPage(driver);
     }
 
     public void moveToCourse(String title) {
