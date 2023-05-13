@@ -1,6 +1,7 @@
 package components;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -48,15 +49,13 @@ public class CourseTile extends AbsComponent<CourseTile> {
                 })
                 .reduce(reduceImpl)
                 .map((LocalDate localDate) -> {
-                    String finalDate = localDate.format(DateTimeFormatter.ofPattern("d M"));
+                    String finalDate = localDate.format(DateTimeFormatter.ofPattern("d MMMM", new Locale("RU", "ru")));
                     return finalDate.replaceAll("\\s+\\d+$", String.format("%s", MonthData.getMonthName(localDate.getMonthValue())));
                 })
                 .map((String finalDate) -> {
                     WebElement element = driver.findElement(By.xpath(String.format(courseTitleLocator, finalDate)));
-                    return element;
-                })
-                .get()
-                .click();
+                    return ((JavascriptExecutor)driver).executeScript("arguments[0].click()", element);
+                });
     }
 
     public void moveToCourse(String title) {

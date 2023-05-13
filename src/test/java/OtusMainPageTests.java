@@ -18,7 +18,7 @@ private WebDriver driver;
         new MainPage(driver)
                 .open();
         new CourseTile(driver)
-                .moveToCourse("Apache Kafka");
+                .moveToCourse("Специализация Administrator Linux");
     }
 
     @Test
@@ -26,9 +26,9 @@ private WebDriver driver;
         new MainPage(driver)
                 .open();
         new CourseTile(driver)
-                .findCourseByTitle("Apache Kafka");
+                .findCourseByTitle("Специализация Administrator Linux");
         new AnyPage(driver)
-                .rightPageShouldBeOpened("Apache Kafka");
+                .rightPageShouldBeOpened("Специализация Administrator Linux");
     }
 
     @Test
